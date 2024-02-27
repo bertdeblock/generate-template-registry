@@ -1,10 +1,10 @@
 import chalk from "chalk";
 import { camelCase, pascalCase } from "change-case";
+import glob from "fast-glob";
 import { pathExists, readJson } from "fs-extra/esm";
 import { writeFile } from "node:fs/promises";
 import { join, parse } from "node:path";
 import { cwd as processCwd } from "node:process";
-import recursiveReadDir from "recursive-readdir";
 
 export async function generateTemplateRegistry(cwd = processCwd()) {
   let packageJson: any;
@@ -116,17 +116,16 @@ async function getEntries(dir: string): Promise<string[]> {
   const paths: string[] = [];
 
   if (await pathExists(dir)) {
-    const files = await recursiveReadDir(dir);
+    const files = await glob("**/*", { cwd: dir });
 
-    files.forEach((file) => {
+    files.sort().forEach((file) => {
       const parsed = parse(file);
-      const folder = parsed.dir.replace(`${dir}`, "");
 
       let path: string;
       if (parsed.name === "index") {
-        path = folder.substring(1);
+        path = parsed.dir;
       } else {
-        path = `${folder}/${parsed.name}`.substring(1);
+        path = parsed.dir ? `${parsed.dir}/${parsed.name}` : parsed.name;
       }
 
       if (paths.includes(path) === false) {

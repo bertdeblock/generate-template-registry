@@ -30,8 +30,8 @@
   "dependencies": {
     "chalk": "^5.3.0",
     "change-case": "^5.4.3",
-    "fs-extra": "^11.2.0",
-    "recursive-readdir": "^2.2.3"
+    "fast-glob": "^3.3.2",
+    "fs-extra": "^11.2.0"
   },
   "devDependencies": {
     "@release-it-plugins/lerna-changelog": "^6.1.0",
