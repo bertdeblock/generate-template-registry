@@ -3,17 +3,20 @@
 exports[`generates a template registry for a v1 addon 1`] = `
 "// Components:
 import type BarComponent from "v1-addon/components/bar";
+import type FooBarComponent from "v1-addon/components/foo-bar";
 import type FooComponent from "v1-addon/components/foo";
-import type FooBarComponent from "v1-addon/components/foo/bar";
+import type FooBarComponent2 from "v1-addon/components/foo/bar";
 
 export default interface Registry {
   // Components:
   Bar: typeof BarComponent;
   "bar": typeof BarComponent;
+  FooBar: typeof FooBarComponent;
+  "foo-bar": typeof FooBarComponent;
   Foo: typeof FooComponent;
   "foo": typeof FooComponent;
-  "Foo::Bar": typeof FooBarComponent;
-  "foo/bar": typeof FooBarComponent;
+  "Foo::Bar": typeof FooBarComponent2;
+  "foo/bar": typeof FooBarComponent2;
 }
 "
 `;
@@ -21,17 +24,20 @@ export default interface Registry {
 exports[`generates a template registry for a v2 addon 1`] = `
 "// Components:
 import type BarComponent from "./components/bar";
+import type FooBarComponent from "./components/foo-bar";
 import type FooComponent from "./components/foo";
-import type FooBarComponent from "./components/foo/bar";
+import type FooBarComponent2 from "./components/foo/bar";
 
 export default interface Registry {
   // Components:
   Bar: typeof BarComponent;
   "bar": typeof BarComponent;
+  FooBar: typeof FooBarComponent;
+  "foo-bar": typeof FooBarComponent;
   Foo: typeof FooComponent;
   "foo": typeof FooComponent;
-  "Foo::Bar": typeof FooBarComponent;
-  "foo/bar": typeof FooBarComponent;
+  "Foo::Bar": typeof FooBarComponent2;
+  "foo/bar": typeof FooBarComponent2;
 }
 "
 `;
@@ -39,17 +45,20 @@ export default interface Registry {
 exports[`generates a template registry for an app 1`] = `
 "// Components:
 import type BarComponent from "app/components/bar";
+import type FooBarComponent from "app/components/foo-bar";
 import type FooComponent from "app/components/foo";
-import type FooBarComponent from "app/components/foo/bar";
+import type FooBarComponent2 from "app/components/foo/bar";
 
 export default interface Registry {
   // Components:
   Bar: typeof BarComponent;
   "bar": typeof BarComponent;
+  FooBar: typeof FooBarComponent;
+  "foo-bar": typeof FooBarComponent;
   Foo: typeof FooComponent;
   "foo": typeof FooComponent;
-  "Foo::Bar": typeof FooBarComponent;
-  "foo/bar": typeof FooBarComponent;
+  "Foo::Bar": typeof FooBarComponent2;
+  "foo/bar": typeof FooBarComponent2;
 }
 "
 `;

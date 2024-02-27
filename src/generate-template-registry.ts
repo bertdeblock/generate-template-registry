@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import { camelCase, pascalCase } from "change-case";
+import { execa } from "execa";
 import glob from "fast-glob";
 import { pathExists, readJson } from "fs-extra/esm";
 import { writeFile } from "node:fs/promises";
@@ -29,11 +30,15 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
   const helpers = await getEntries(join(cwd, srcDir, "helpers"));
   const modifiers = await getEntries(join(cwd, srcDir, "modifiers"));
 
+  const identifiers = new Identifiers();
+
   let templateRegistryContent = "";
 
   if (components.length > 0) {
     const componentImports = components.map((name) => {
-      return `import type ${pascalCase(name)}Component from "${importRoot}/components/${name}";`;
+      const identifier = identifiers.generate(name, pascalCase, "Component");
+
+      return `import type ${identifier} from "${importRoot}/components/${name}";`;
     });
 
     templateRegistryContent += "// Components:\n";
@@ -42,7 +47,9 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
 
   if (helpers.length > 0) {
     const helperImports = helpers.map((name) => {
-      return `import type ${camelCase(name)}Helper from "${importRoot}/helpers/${name}";`;
+      const identifier = identifiers.generate(name, camelCase, "Helper");
+
+      return `import type ${identifier} from "${importRoot}/helpers/${name}";`;
     });
 
     templateRegistryContent += "// Helpers:\n";
@@ -51,7 +58,9 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
 
   if (modifiers.length > 0) {
     const modifierImports = modifiers.map((name) => {
-      return `import type ${camelCase(name)}Modifier from "${importRoot}/modifiers/${name}";`;
+      const identifier = identifiers.generate(name, camelCase, "Modifier");
+
+      return `import type ${identifier} from "${importRoot}/modifiers/${name}";`;
     });
 
     templateRegistryContent += "// Modifiers:\n";
@@ -66,8 +75,8 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     let componentsContent = "  // Components:\n";
 
     components.forEach((name) => {
-      componentsContent += `  ${angleBracketNotation(name)}: typeof ${pascalCase(name)}Component;\n`;
-      componentsContent += `  "${name}": typeof ${pascalCase(name)}Component;\n`;
+      componentsContent += `  ${angleBracketNotation(name)}: typeof ${identifiers.for(name)};\n`;
+      componentsContent += `  "${name}": typeof ${identifiers.for(name)};\n`;
     });
 
     entriesContent.push(componentsContent);
@@ -77,7 +86,7 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     let helpersContent = "  // Helpers:\n";
 
     helpers.forEach((name) => {
-      helpersContent += `  "${name}": typeof ${camelCase(name)}Helper;\n`;
+      helpersContent += `  "${name}": typeof ${identifiers.for(name)};\n`;
     });
 
     entriesContent.push(helpersContent);
@@ -87,7 +96,7 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     let modifiersContent = "  // Modifiers:\n";
 
     modifiers.forEach((name) => {
-      modifiersContent += `  "${name}": typeof ${camelCase(name)}Modifier;\n`;
+      modifiersContent += `  "${name}": typeof ${identifiers.for(name)};\n`;
     });
 
     entriesContent.push(modifiersContent);
@@ -98,6 +107,12 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
   const templateRegistryPath = join(cwd, srcDir, "template-registry.ts");
 
   await writeFile(templateRegistryPath, templateRegistryContent);
+
+  try {
+    await execa("npx", ["prettier", "--write", templateRegistryPath]);
+  } catch {
+    // Move on.
+  }
 
   console.log(
     chalk.green(`Template registry generated at ${templateRegistryPath}`),
@@ -149,4 +164,29 @@ function angleBracketNotation(name: string) {
   }
 
   return result;
+}
+
+class Identifiers {
+  map: Record<string, string> = {};
+  seen: Record<string, number> = {};
+
+  for(name: string) {
+    return this.map[name];
+  }
+
+  generate(
+    name: string,
+    transform: typeof camelCase | typeof pascalCase,
+    suffix: string,
+  ) {
+    let identifier = `${transform(name)}${suffix}`;
+
+    this.seen[identifier] = (this.seen[identifier] || 0) + 1;
+
+    identifier += this.seen[identifier] > 1 ? this.seen[identifier] : "";
+
+    this.map[name] = identifier;
+
+    return identifier;
+  }
 }
