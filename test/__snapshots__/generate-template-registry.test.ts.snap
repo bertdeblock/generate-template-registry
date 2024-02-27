@@ -1,0 +1,55 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generates a template registry for a v1 addon 1`] = `
+"// Components:
+import type FooComponent from "v1-addon/components/foo";
+import type BarComponent from "v1-addon/components/bar";
+import type FooBarComponent from "v1-addon/components/foo/bar";
+
+export default interface Registry {
+  // Components:
+  Foo: typeof FooComponent;
+  "foo": typeof FooComponent;
+  Bar: typeof BarComponent;
+  "bar": typeof BarComponent;
+  "Foo::Bar": typeof FooBarComponent;
+  "foo/bar": typeof FooBarComponent;
+}
+"
+`;
+
+exports[`generates a template registry for a v2 addon 1`] = `
+"// Components:
+import type FooComponent from "./components/foo";
+import type BarComponent from "./components/bar";
+import type FooBarComponent from "./components/foo/bar";
+
+export default interface Registry {
+  // Components:
+  Foo: typeof FooComponent;
+  "foo": typeof FooComponent;
+  Bar: typeof BarComponent;
+  "bar": typeof BarComponent;
+  "Foo::Bar": typeof FooBarComponent;
+  "foo/bar": typeof FooBarComponent;
+}
+"
+`;
+
+exports[`generates a template registry for an app 1`] = `
+"// Components:
+import type FooComponent from "app/components/foo";
+import type BarComponent from "app/components/bar";
+import type FooBarComponent from "app/components/foo/bar";
+
+export default interface Registry {
+  // Components:
+  Foo: typeof FooComponent;
+  "foo": typeof FooComponent;
+  Bar: typeof BarComponent;
+  "bar": typeof BarComponent;
+  "Foo::Bar": typeof FooBarComponent;
+  "foo/bar": typeof FooBarComponent;
+}
+"
+`;

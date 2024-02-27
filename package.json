@@ -1,0 +1,77 @@
+{
+  "name": "@bertdeblock/generate-template-registry",
+  "version": "0.0.0",
+  "description": "Generate a template registry for Glint.",
+  "repository": "https://github.com/bertdeblock/generate-template-registry",
+  "license": "MIT",
+  "author": "Bert De Block",
+  "type": "module",
+  "bin": {
+    "generate-template-registry": "bin/generate-template-registry.js"
+  },
+  "files": [
+    "bin/",
+    "dist/"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "lint": "concurrently --group --prefix-colors auto \"npm:lint:*(!fix)\"",
+    "lint:fix": "concurrently --group --prefix-colors auto \"npm:lint:*:fix\"",
+    "lint:format": "prettier . --cache --check",
+    "lint:format:fix": "prettier . --cache --write",
+    "lint:js": "eslint . --cache",
+    "lint:js:fix": "eslint . --fix",
+    "lint:types": "tsc --noEmit",
+    "prepack": "tsc --project tsconfig.json",
+    "start": "pnpm build --watch",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "change-case": "^5.4.3",
+    "fs-extra": "^11.2.0",
+    "recursive-readdir": "^2.2.3"
+  },
+  "devDependencies": {
+    "@release-it-plugins/lerna-changelog": "^6.1.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.11.20",
+    "@types/recursive-readdir": "^2.2.4",
+    "@typescript-eslint/parser": "^7.1.0",
+    "@vitest/coverage-v8": "^1.2.2",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.56.0",
+    "eslint-plugin-n": "^16.6.2",
+    "prettier": "^3.2.5",
+    "recursive-copy": "^2.0.14",
+    "release-it": "^17.0.3",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
+  },
+  "packageManager": "pnpm@8.6.12",
+  "engines": {
+    "node": ">= 18"
+  },
+  "volta": {
+    "node": "18.19.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "Release v${version}",
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true,
+      "tokenRef": "GITHUB_AUTH"
+    },
+    "plugins": {
+      "@release-it-plugins/lerna-changelog": {
+        "infile": "CHANGELOG.md"
+      }
+    }
+  }
+}
