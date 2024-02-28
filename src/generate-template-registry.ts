@@ -18,13 +18,11 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     );
   }
 
-  const srcDir = isAddon(packageJson)
-    ? isV2Addon(packageJson)
-      ? "src"
-      : "addon"
-    : "app";
+  const packageIsAddon = isAddon(packageJson);
+  const packageIsV2Addon = isV2Addon(packageJson);
 
-  const importRoot = isV2Addon(packageJson) ? "." : packageJson.name;
+  const importRoot = packageIsV2Addon ? "." : packageJson.name;
+  const srcDir = packageIsAddon ? (packageIsV2Addon ? "src" : "addon") : "app";
 
   const components = await getEntries(join(cwd, srcDir, "components"));
   const helpers = await getEntries(join(cwd, srcDir, "helpers"));
@@ -35,10 +33,11 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
   let templateRegistryContent = "";
 
   if (components.length > 0) {
-    const componentImports = components.map((name) => {
-      const identifier = identifiers.generate(name, pascalCase, "Component");
+    const componentImports = components.map(({ ext, path }) => {
+      const identifier = identifiers.generate(path, pascalCase, "Component");
+      const file = packageIsV2Addon ? path + ext : path;
 
-      return `import type ${identifier} from "${importRoot}/components/${name}";`;
+      return `import type ${identifier} from "${importRoot}/components/${file}";`;
     });
 
     templateRegistryContent += "// Components:\n";
@@ -46,10 +45,11 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
   }
 
   if (helpers.length > 0) {
-    const helperImports = helpers.map((name) => {
-      const identifier = identifiers.generate(name, camelCase, "Helper");
+    const helperImports = helpers.map(({ ext, path }) => {
+      const identifier = identifiers.generate(path, camelCase, "Helper");
+      const file = packageIsV2Addon ? path + ext : path;
 
-      return `import type ${identifier} from "${importRoot}/helpers/${name}";`;
+      return `import type ${identifier} from "${importRoot}/helpers/${file}";`;
     });
 
     templateRegistryContent += "// Helpers:\n";
@@ -57,10 +57,11 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
   }
 
   if (modifiers.length > 0) {
-    const modifierImports = modifiers.map((name) => {
-      const identifier = identifiers.generate(name, camelCase, "Modifier");
+    const modifierImports = modifiers.map(({ ext, path }) => {
+      const identifier = identifiers.generate(path, camelCase, "Modifier");
+      const file = packageIsV2Addon ? path + ext : path;
 
-      return `import type ${identifier} from "${importRoot}/modifiers/${name}";`;
+      return `import type ${identifier} from "${importRoot}/modifiers/${file}";`;
     });
 
     templateRegistryContent += "// Modifiers:\n";
@@ -74,9 +75,9 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
   if (components.length > 0) {
     let componentsContent = "  // Components:\n";
 
-    components.forEach((name) => {
-      componentsContent += `  ${angleBracketNotation(name)}: typeof ${identifiers.for(name)};\n`;
-      componentsContent += `  "${name}": typeof ${identifiers.for(name)};\n`;
+    components.forEach(({ path }) => {
+      componentsContent += `  ${angleBracketNotation(path)}: typeof ${identifiers.for(path)};\n`;
+      componentsContent += `  "${path}": typeof ${identifiers.for(path)};\n`;
     });
 
     entriesContent.push(componentsContent);
@@ -85,8 +86,8 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
   if (helpers.length > 0) {
     let helpersContent = "  // Helpers:\n";
 
-    helpers.forEach((name) => {
-      helpersContent += `  "${name}": typeof ${identifiers.for(name)};\n`;
+    helpers.forEach(({ path }) => {
+      helpersContent += `  "${path}": typeof ${identifiers.for(path)};\n`;
     });
 
     entriesContent.push(helpersContent);
@@ -95,8 +96,8 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
   if (modifiers.length > 0) {
     let modifiersContent = "  // Modifiers:\n";
 
-    modifiers.forEach((name) => {
-      modifiersContent += `  "${name}": typeof ${identifiers.for(name)};\n`;
+    modifiers.forEach(({ path }) => {
+      modifiersContent += `  "${path}": typeof ${identifiers.for(path)};\n`;
     });
 
     entriesContent.push(modifiersContent);
@@ -127,11 +128,16 @@ function isV2Addon(packageFile: any): boolean {
   return packageFile["ember-addon"]?.version === 2;
 }
 
-async function getEntries(dir: string): Promise<string[]> {
-  const paths: string[] = [];
+interface Entry {
+  ext: string;
+  path: string;
+}
+
+async function getEntries(dir: string): Promise<Entry[]> {
+  const entries: Entry[] = [];
 
   if (await pathExists(dir)) {
-    const files = await glob("**/*", { cwd: dir });
+    const files = await glob("**/*.{gjs,gts,ts}", { cwd: dir });
 
     files.sort().forEach((file) => {
       const parsed = parse(file);
@@ -143,13 +149,11 @@ async function getEntries(dir: string): Promise<string[]> {
         path = parsed.dir ? `${parsed.dir}/${parsed.name}` : parsed.name;
       }
 
-      if (paths.includes(path) === false) {
-        paths.push(path);
-      }
+      entries.push({ ext: parsed.ext, path });
     });
   }
 
-  return paths;
+  return entries;
 }
 
 function angleBracketNotation(name: string) {
