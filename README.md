@@ -27,3 +27,7 @@ or
 ```shell
 bunx @bertdeblock/generate-template-registry
 ```
+
+# Caveats
+
+- If your app or addon has components, helpers or modifiers with the same name, duplicated template registry entries will be generated, which will need to be fixed manually
