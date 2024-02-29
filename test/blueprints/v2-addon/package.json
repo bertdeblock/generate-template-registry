@@ -3,6 +3,7 @@
   "keywords": [
     "ember-addon"
   ],
+  "ember": {},
   "ember-addon": {
     "version": 2
   }
