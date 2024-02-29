@@ -1,6 +1,18 @@
 
 
 
+
+## v0.2.0 (2024-02-29)
+
+#### :rocket: Enhancement
+* [#5](https://github.com/bertdeblock/generate-template-registry/pull/5) Warn when an empty template registry will be generated ([@bertdeblock](https://github.com/bertdeblock))
+
+#### :memo: Documentation
+* [#6](https://github.com/bertdeblock/generate-template-registry/pull/6) Add `Caveats` section to docs ([@bertdeblock](https://github.com/bertdeblock))
+
+#### Committers: 1
+- Bert De Block ([@bertdeblock](https://github.com/bertdeblock))
+
 ## v0.1.3 (2024-02-29)
 
 #### :bug: Bug Fix
