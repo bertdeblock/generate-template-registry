@@ -2,7 +2,11 @@ import { pascalCase } from "change-case";
 import glob from "fast-glob";
 import { pathExists } from "fs-extra/esm";
 import { join, parse } from "node:path";
-import type { EntriesResult } from "./types.js";
+import {
+  EntryType,
+  type EmberPackageJson,
+  type EntriesResult,
+} from "./types.js";
 
 export async function getEntries(directory: string): Promise<EntriesResult> {
   const seenIdentifiers: Record<string, number> = {};
@@ -12,11 +16,11 @@ export async function getEntries(directory: string): Promise<EntriesResult> {
     modifiers: [],
   };
 
-  for (const type in entriesResult) {
-    const path = join(directory, type);
+  for (const entryType of Object.values(EntryType)) {
+    const path = join(directory, entryType);
 
     if (await pathExists(path)) {
-      const files = await glob("**/*.{gjs,gts,ts}", { cwd: path });
+      const files = await glob("**/*.{gts,ts}", { cwd: path });
       const filesSorted = files.sort();
 
       for (let index = 0; index < filesSorted.length; index++) {
@@ -40,7 +44,7 @@ export async function getEntries(directory: string): Promise<EntriesResult> {
           seenIdentifiers[identifier] = 1;
         }
 
-        entriesResult[type as keyof EntriesResult].push({
+        entriesResult[entryType as keyof EntriesResult].push({
           extension: fileParsed.ext,
           identifier,
           name,
@@ -52,15 +56,19 @@ export async function getEntries(directory: string): Promise<EntriesResult> {
   return entriesResult;
 }
 
-export function isAddon(packageJson: any): boolean {
-  return packageJson.keywords?.includes("ember-addon");
+export function isAddon(packageJson: EmberPackageJson): boolean {
+  if (Array.isArray(packageJson.keywords)) {
+    return packageJson.keywords.includes("ember-addon");
+  }
+
+  return false;
 }
 
-export function isEmberPackage(packageJson: any): boolean {
+export function isEmberPackage(packageJson: EmberPackageJson): boolean {
   return typeof packageJson.ember === "object";
 }
 
-export function isV2Addon(packageJson: any): boolean {
+export function isV2Addon(packageJson: EmberPackageJson): boolean {
   return packageJson["ember-addon"]?.version === 2;
 }
 

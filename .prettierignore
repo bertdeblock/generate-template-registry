@@ -1,4 +1,5 @@
 /coverage/
 /dist/
+/test/output/
 /CHANGELOG.md
 /pnpm-lock.yaml

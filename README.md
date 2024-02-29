@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/bertdeblock/generate-template-registry/workflows/CI/badge.svg)](https://github.com/bertdeblock/generate-template-registry/actions?query=workflow%3ACI)
 
-Generate a template registry for [Glint](https://github.com/typed-ember/glint).
+Generate a [template registry](https://typed-ember.gitbook.io/glint/environments/ember/template-registry) for [Glint](https://github.com/typed-ember/glint).
 
 ## Usage
 
