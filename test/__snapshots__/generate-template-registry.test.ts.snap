@@ -23,10 +23,10 @@ export default interface Registry {
 
 exports[`generates a template registry for a v2 addon 1`] = `
 "// Components:
-import type BarComponent from "./components/bar";
-import type FooBarComponent from "./components/foo-bar";
-import type FooComponent from "./components/foo";
-import type FooBarComponent2 from "./components/foo/bar";
+import type BarComponent from "./components/bar.ts";
+import type FooBarComponent from "./components/foo-bar.gts";
+import type FooComponent from "./components/foo.ts";
+import type FooBarComponent2 from "./components/foo/bar.ts";
 
 export default interface Registry {
   // Components:
