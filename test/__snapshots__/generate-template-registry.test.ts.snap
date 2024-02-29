@@ -1,64 +1,100 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`generates a template registry for a v1 addon 1`] = `
-"// Components:
-import type BarComponent from "v1-addon/components/bar";
-import type FooBarComponent from "v1-addon/components/foo-bar";
-import type FooComponent from "v1-addon/components/foo";
-import type FooBarComponent2 from "v1-addon/components/foo/bar";
+"// components
+import type Bar from "v1-addon/components/bar";
+import type FooBar from "v1-addon/components/foo-bar";
+import type Foo from "v1-addon/components/foo";
+import type FooBar2 from "v1-addon/components/foo/bar";
 
-export default interface Registry {
-  // Components:
-  Bar: typeof BarComponent;
-  "bar": typeof BarComponent;
-  FooBar: typeof FooBarComponent;
-  "foo-bar": typeof FooBarComponent;
-  Foo: typeof FooComponent;
-  "foo": typeof FooComponent;
-  "Foo::Bar": typeof FooBarComponent2;
-  "foo/bar": typeof FooBarComponent2;
+// helpers
+import type Foo2 from "v1-addon/helpers/foo";
+
+// modifiers
+import type Foo3 from "v1-addon/modifiers/foo";
+
+export default interface V1AddonRegistry {
+  // components
+  bar: typeof Bar;
+  Bar: typeof Bar;
+  "foo-bar": typeof FooBar;
+  FooBar: typeof FooBar;
+  foo: typeof Foo;
+  Foo: typeof Foo;
+  "foo/bar": typeof FooBar2;
+  "Foo::Bar": typeof FooBar2;
+
+  // helpers
+  foo: typeof Foo2;
+
+  // modifiers
+  foo: typeof Foo3;
 }
 "
 `;
 
 exports[`generates a template registry for a v2 addon 1`] = `
-"// Components:
-import type BarComponent from "./components/bar.ts";
-import type FooBarComponent from "./components/foo-bar.gts";
-import type FooComponent from "./components/foo.ts";
-import type FooBarComponent2 from "./components/foo/bar.ts";
+"// components
+import type Bar from "./components/bar.ts";
+import type FooBar from "./components/foo-bar.gts";
+import type Foo from "./components/foo.ts";
+import type FooBar2 from "./components/foo/bar.ts";
 
-export default interface Registry {
-  // Components:
-  Bar: typeof BarComponent;
-  "bar": typeof BarComponent;
-  FooBar: typeof FooBarComponent;
-  "foo-bar": typeof FooBarComponent;
-  Foo: typeof FooComponent;
-  "foo": typeof FooComponent;
-  "Foo::Bar": typeof FooBarComponent2;
-  "foo/bar": typeof FooBarComponent2;
+// helpers
+import type Foo2 from "./helpers/foo.ts";
+
+// modifiers
+import type Foo3 from "./modifiers/foo.ts";
+
+export default interface V2AddonRegistry {
+  // components
+  bar: typeof Bar;
+  Bar: typeof Bar;
+  "foo-bar": typeof FooBar;
+  FooBar: typeof FooBar;
+  foo: typeof Foo;
+  Foo: typeof Foo;
+  "foo/bar": typeof FooBar2;
+  "Foo::Bar": typeof FooBar2;
+
+  // helpers
+  foo: typeof Foo2;
+
+  // modifiers
+  foo: typeof Foo3;
 }
 "
 `;
 
 exports[`generates a template registry for an app 1`] = `
-"// Components:
-import type BarComponent from "app/components/bar";
-import type FooBarComponent from "app/components/foo-bar";
-import type FooComponent from "app/components/foo";
-import type FooBarComponent2 from "app/components/foo/bar";
+"// components
+import type Bar from "app/components/bar";
+import type FooBar from "app/components/foo-bar";
+import type Foo from "app/components/foo";
+import type FooBar2 from "app/components/foo/bar";
 
-export default interface Registry {
-  // Components:
-  Bar: typeof BarComponent;
-  "bar": typeof BarComponent;
-  FooBar: typeof FooBarComponent;
-  "foo-bar": typeof FooBarComponent;
-  Foo: typeof FooComponent;
-  "foo": typeof FooComponent;
-  "Foo::Bar": typeof FooBarComponent2;
-  "foo/bar": typeof FooBarComponent2;
+// helpers
+import type Foo2 from "app/helpers/foo";
+
+// modifiers
+import type Foo3 from "app/modifiers/foo";
+
+export default interface AppRegistry {
+  // components
+  bar: typeof Bar;
+  Bar: typeof Bar;
+  "foo-bar": typeof FooBar;
+  FooBar: typeof FooBar;
+  foo: typeof Foo;
+  Foo: typeof Foo;
+  "foo/bar": typeof FooBar2;
+  "Foo::Bar": typeof FooBar2;
+
+  // helpers
+  foo: typeof Foo2;
+
+  // modifiers
+  foo: typeof Foo3;
 }
 "
 `;
