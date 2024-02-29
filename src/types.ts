@@ -1,7 +1,12 @@
-export interface EntriesResult {
-  components: Entry[];
-  helpers: Entry[];
-  modifiers: Entry[];
+// eslint-disable-next-line n/no-missing-import
+import type { PackageJson } from "type-fest";
+
+export type EntriesResult = Record<EntryType, Entry[]>;
+
+export enum EntryType {
+  Components = "components",
+  Helpers = "helpers",
+  Modifiers = "modifiers",
 }
 
 export interface Entry {
@@ -9,3 +14,12 @@ export interface Entry {
   identifier: string;
   name: string;
 }
+
+export type EmberPackageJson = PackageJson & {
+  ember?: {
+    edition?: string;
+  };
+  "ember-addon"?: {
+    version?: number;
+  };
+};

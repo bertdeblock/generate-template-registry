@@ -13,10 +13,16 @@ import {
   toAngleBracketNotation,
   toRegistryKey,
 } from "./helpers.js";
-import type { EntriesResult } from "./types.js";
+import {
+  EntryType,
+  type EmberPackageJson,
+  type EntriesResult,
+} from "./types.js";
+
+const TAB = "  ";
 
 export async function generateTemplateRegistry(cwd = processCwd()) {
-  let packageJson: any;
+  let packageJson: EmberPackageJson;
 
   try {
     packageJson = await readJson(join(cwd, "package.json"));
@@ -26,11 +32,14 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     );
   }
 
+  if (typeof packageJson.name === "undefined") {
+    throw new Error(`The found "package.json" file is missing a "name" entry.`);
+  }
+
   if (isEmberPackage(packageJson) === false) {
     throw new Error("The current package is not an Ember app or addon.");
   }
 
-  const importRoot = isV2Addon(packageJson) ? "." : packageJson.name;
   const entriesDir = isAddon(packageJson)
     ? isV2Addon(packageJson)
       ? "src"
@@ -38,6 +47,20 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     : "app";
 
   const entries = await getEntries(join(cwd, entriesDir));
+
+  if (
+    entries.components.length === 0 &&
+    entries.helpers.length === 0 &&
+    entries.modifiers.length === 0
+  ) {
+    console.warn(
+      chalk.yellow(
+        "No component, helper or modifier gts/ts files found. An empty template registry will be generated.",
+      ),
+    );
+  }
+
+  const importRoot = isV2Addon(packageJson) ? "." : packageJson.name;
 
   let templateRegistryContent = "";
 
@@ -63,7 +86,7 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
 
   templateRegistryContent += `export default interface ${pascalCase(packageJson.name)}Registry {\n`;
 
-  let entriesContent: string[] = [];
+  const entriesContent: string[] = [];
 
   for (const type in entries) {
     const typeEntries = entries[type as keyof EntriesResult];
@@ -72,13 +95,13 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
       continue;
     }
 
-    let content = `  // ${type}\n`;
+    let content = `${TAB}// ${type}\n`;
 
     typeEntries.forEach((entry) => {
-      content += `  ${toRegistryKey(entry.name)}: typeof ${entry.identifier};\n`;
+      content += `${TAB}${toRegistryKey(entry.name)}: typeof ${entry.identifier};\n`;
 
-      if (type === "components") {
-        content += `  ${toRegistryKey(toAngleBracketNotation(entry.name))}: typeof ${entry.identifier};\n`;
+      if (type === EntryType.Components) {
+        content += `${TAB}${toRegistryKey(toAngleBracketNotation(entry.name))}: typeof ${entry.identifier};\n`;
       }
     });
 
