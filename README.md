@@ -13,19 +13,19 @@ cd your/app-or-addon/path
 and
 
 ```shell
-npx @bertdeblock/generate-template-registry
+npx @bertdeblock/generate-template-registry@latest
 ```
 
 or
 
 ```shell
-pnpx @bertdeblock/generate-template-registry
+pnpx @bertdeblock/generate-template-registry@latest
 ```
 
 or
 
 ```shell
-bunx @bertdeblock/generate-template-registry
+bunx @bertdeblock/generate-template-registry@latest
 ```
 
 ## Caveats
