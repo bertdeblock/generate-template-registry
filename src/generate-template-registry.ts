@@ -3,6 +3,7 @@ import { pascalCase } from "change-case";
 import { execa } from "execa";
 import { readJson } from "fs-extra/esm";
 import { writeFile } from "node:fs/promises";
+import { EOL } from "node:os";
 import { join } from "node:path";
 import { cwd as processCwd } from "node:process";
 import {
@@ -81,10 +82,10 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
       return `import type ${entry.identifier} from "${importRoot}/${type}/${entryName}";`;
     });
 
-    templateRegistryContent += `// ${type}\n${imports.join("\n")}\n\n`;
+    templateRegistryContent += `// ${type}${EOL}${imports.join(EOL)}${EOL}${EOL}`;
   }
 
-  templateRegistryContent += `export default interface ${pascalCase(packageJson.name)}Registry {\n`;
+  templateRegistryContent += `export default interface ${pascalCase(packageJson.name)}Registry {${EOL}`;
 
   const entriesContent: string[] = [];
 
@@ -95,20 +96,20 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
       continue;
     }
 
-    let content = `${TAB}// ${type}\n`;
+    let content = `${TAB}// ${type}${EOL}`;
 
     typeEntries.forEach((entry) => {
-      content += `${TAB}${toRegistryKey(entry.name)}: typeof ${entry.identifier};\n`;
+      content += `${TAB}${toRegistryKey(entry.name)}: typeof ${entry.identifier};${EOL}`;
 
       if (type === EntryType.Components) {
-        content += `${TAB}${toRegistryKey(toAngleBracketNotation(entry.name))}: typeof ${entry.identifier};\n`;
+        content += `${TAB}${toRegistryKey(toAngleBracketNotation(entry.name))}: typeof ${entry.identifier};${EOL}`;
       }
     });
 
     entriesContent.push(content);
   }
 
-  templateRegistryContent += `${entriesContent.join("\n")}}\n`;
+  templateRegistryContent += `${entriesContent.join(EOL)}}${EOL}`;
 
   const templateRegistryPath = join(cwd, entriesDir, "template-registry.ts");
 
