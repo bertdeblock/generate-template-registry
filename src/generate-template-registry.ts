@@ -41,8 +41,9 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     throw new Error(`The found "package.json" file is missing a "name" entry.`);
   }
 
+  const isV2AddonPackage = isV2Addon(packageJson);
   const entriesDir = isAddon(packageJson)
-    ? isV2Addon(packageJson)
+    ? isV2AddonPackage
       ? "src"
       : "addon"
     : "app";
@@ -61,9 +62,9 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     );
   }
 
-  const importRoot = isV2Addon(packageJson) ? "." : packageJson.name;
-
-  let templateRegistryContent = "";
+  const importRoot = isV2AddonPackage ? "." : packageJson.name;
+  const templateRegistryImportsContent: string[] = [];
+  const templateRegistryEntriesContent: string[] = [];
 
   for (const type in entries) {
     const typeEntries = entries[type as keyof EntriesResult];
@@ -72,46 +73,33 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
       continue;
     }
 
-    const imports = typeEntries.map((entry) => {
+    let importsContent = `// ${type}${EOL}`;
+    let entriesContent = `${TAB}// ${type}${EOL}`;
+
+    for (const entry of typeEntries) {
       let entryName = entry.name;
 
-      if (isV2Addon(packageJson)) {
+      if (isV2AddonPackage) {
         entryName += entry.extension;
       }
 
-      return `import type ${entry.identifier} from "${importRoot}/${type}/${entryName}";`;
-    });
-
-    templateRegistryContent += `// ${type}${EOL}${imports.join(EOL)}${EOL}${EOL}`;
-  }
-
-  templateRegistryContent += `export default interface ${pascalCase(packageJson.name)}Registry {${EOL}`;
-
-  const entriesContent: string[] = [];
-
-  for (const type in entries) {
-    const typeEntries = entries[type as keyof EntriesResult];
-
-    if (typeEntries.length === 0) {
-      continue;
-    }
-
-    let content = `${TAB}// ${type}${EOL}`;
-
-    typeEntries.forEach((entry) => {
-      content += `${TAB}${toRegistryKey(entry.name)}: typeof ${entry.identifier};${EOL}`;
+      importsContent += `import type ${entry.identifier} from "${importRoot}/${type}/${entryName}";${EOL}`;
+      entriesContent += `${TAB}${toRegistryKey(entry.name)}: typeof ${entry.identifier};${EOL}`;
 
       if (type === EntryType.Components) {
-        content += `${TAB}${toRegistryKey(toAngleBracketNotation(entry.name))}: typeof ${entry.identifier};${EOL}`;
+        entriesContent += `${TAB}${toRegistryKey(toAngleBracketNotation(entry.name))}: typeof ${entry.identifier};${EOL}`;
       }
-    });
+    }
 
-    entriesContent.push(content);
+    templateRegistryImportsContent.push(importsContent);
+    templateRegistryEntriesContent.push(entriesContent);
   }
 
-  templateRegistryContent += `${entriesContent.join(EOL)}}${EOL}`;
-
   const templateRegistryPath = join(cwd, entriesDir, "template-registry.ts");
+  const templateRegistryContent = `${templateRegistryImportsContent.join(EOL)}
+export default interface ${pascalCase(packageJson.name)}Registry {
+${templateRegistryEntriesContent.join(EOL)}}
+`;
 
   await writeFile(templateRegistryPath, templateRegistryContent);
 
@@ -122,6 +110,6 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
   }
 
   console.log(
-    chalk.green(`Template registry generated at ${templateRegistryPath}`),
+    chalk.green(`Template registry generated at ${templateRegistryPath}.`),
   );
 }
