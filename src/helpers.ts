@@ -29,19 +29,22 @@ export async function getEntries(directory: string): Promise<EntriesResult> {
 
         let name: string;
         if (fileParsed.name === "index") {
+          // components/foo/index.gts -> foo
           name = fileParsed.dir;
         } else if (fileParsed.dir) {
+          // components/foo/bar.gts -> foo/bar
           name = `${fileParsed.dir}/${fileParsed.name}`;
         } else {
+          // components/foo.gts -> foo
           name = fileParsed.name;
         }
 
         let identifier = pascalCase(name);
         if (seenIdentifiers[identifier]) {
           seenIdentifiers[identifier] += 1;
-          identifier += seenIdentifiers[identifier];
+          identifier += seenIdentifiers[identifier]; // Foo2
         } else {
-          seenIdentifiers[identifier] = 1;
+          seenIdentifiers[identifier] = 1; // Foo
         }
 
         entriesResult[entryType as keyof EntriesResult].push({
