@@ -1,6 +1,7 @@
 # @bertdeblock/generate-template-registry
 
 [![CI](https://github.com/bertdeblock/generate-template-registry/workflows/CI/badge.svg)](https://github.com/bertdeblock/generate-template-registry/actions?query=workflow%3ACI)
+[![NPM Version](https://badge.fury.io/js/%40bertdeblock%2Fgenerate-template-registry.svg)](https://badge.fury.io/js/%40bertdeblock%2Fgenerate-template-registry)
 
 Generate a [template registry](https://typed-ember.gitbook.io/glint/environments/ember/template-registry) for [Glint](https://github.com/typed-ember/glint).
 
