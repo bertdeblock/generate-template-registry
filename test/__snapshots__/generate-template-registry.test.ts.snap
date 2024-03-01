@@ -1,5 +1,38 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`generates a template registry at a custom path 1`] = `
+"// components
+import type Bar from "app/components/bar";
+import type FooBar from "app/components/foo-bar";
+import type Foo from "app/components/foo";
+import type FooBar2 from "app/components/foo/bar";
+
+// helpers
+import type Foo2 from "app/helpers/foo";
+
+// modifiers
+import type Foo3 from "app/modifiers/foo";
+
+export default interface AppRegistry {
+  // components
+  bar: typeof Bar;
+  Bar: typeof Bar;
+  "foo-bar": typeof FooBar;
+  FooBar: typeof FooBar;
+  foo: typeof Foo;
+  Foo: typeof Foo;
+  "foo/bar": typeof FooBar2;
+  "Foo::Bar": typeof FooBar2;
+
+  // helpers
+  foo: typeof Foo2;
+
+  // modifiers
+  foo: typeof Foo3;
+}
+"
+`;
+
 exports[`generates a template registry for a v1 addon 1`] = `
 "// components
 import type Bar from "v1-addon/components/bar";

@@ -32,13 +32,15 @@
     "change-case": "^5.4.3",
     "execa": "^8.0.1",
     "fast-glob": "^3.3.2",
-    "fs-extra": "^11.2.0"
+    "fs-extra": "^11.2.0",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@release-it-plugins/lerna-changelog": "^6.1.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.11.20",
     "@types/recursive-readdir": "^2.2.4",
+    "@types/yargs": "^17.0.32",
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
     "@vitest/coverage-v8": "^1.2.2",
@@ -50,6 +52,7 @@
     "release-it": "^17.0.3",
     "type-fest": "^4.10.3",
     "typescript": "^5.3.3",
+    "uuid": "^9.0.1",
     "vitest": "^1.2.2"
   },
   "packageManager": "pnpm@8.6.12",

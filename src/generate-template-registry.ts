@@ -1,10 +1,10 @@
 import chalk from "chalk";
 import { pascalCase } from "change-case";
 import { execa } from "execa";
-import { readJson } from "fs-extra/esm";
+import { ensureDir, readJson } from "fs-extra/esm";
 import { writeFile } from "node:fs/promises";
-import { join } from "node:path";
-import { cwd as processCwd } from "node:process";
+import { EOL } from "node:os";
+import { isAbsolute, join, parse } from "node:path";
 import {
   getEntries,
   isAddon,
@@ -21,7 +21,10 @@ import {
 
 const TAB = "  ";
 
-export async function generateTemplateRegistry(cwd = processCwd()) {
+export async function generateTemplateRegistry(
+  cwd: string,
+  options: { path?: string } = {},
+) {
   let packageJson: EmberPackageJson;
 
   try {
@@ -32,16 +35,17 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     );
   }
 
-  if (typeof packageJson.name === "undefined") {
-    throw new Error(`The found "package.json" file is missing a "name" entry.`);
-  }
-
   if (isEmberPackage(packageJson) === false) {
     throw new Error("The current package is not an Ember app or addon.");
   }
 
+  if (typeof packageJson.name === "undefined") {
+    throw new Error(`The found "package.json" file is missing a "name" entry.`);
+  }
+
+  const isV2AddonPackage = isV2Addon(packageJson);
   const entriesDir = isAddon(packageJson)
-    ? isV2Addon(packageJson)
+    ? isV2AddonPackage
       ? "src"
       : "addon"
     : "app";
@@ -60,9 +64,9 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     );
   }
 
-  const importRoot = isV2Addon(packageJson) ? "." : packageJson.name;
-
-  let templateRegistryContent = "";
+  const importRoot = isV2AddonPackage ? "." : packageJson.name;
+  const templateRegistryImportsContent: string[] = [];
+  const templateRegistryEntriesContent: string[] = [];
 
   for (const type in entries) {
     const typeEntries = entries[type as keyof EntriesResult];
@@ -71,47 +75,40 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
       continue;
     }
 
-    const imports = typeEntries.map((entry) => {
+    let importsContent = `// ${type}${EOL}`;
+    let entriesContent = `${TAB}// ${type}${EOL}`;
+
+    for (const entry of typeEntries) {
       let entryName = entry.name;
 
-      if (isV2Addon(packageJson)) {
+      if (isV2AddonPackage) {
         entryName += entry.extension;
       }
 
-      return `import type ${entry.identifier} from "${importRoot}/${type}/${entryName}";`;
-    });
-
-    templateRegistryContent += `// ${type}\n${imports.join("\n")}\n\n`;
-  }
-
-  templateRegistryContent += `export default interface ${pascalCase(packageJson.name)}Registry {\n`;
-
-  const entriesContent: string[] = [];
-
-  for (const type in entries) {
-    const typeEntries = entries[type as keyof EntriesResult];
-
-    if (typeEntries.length === 0) {
-      continue;
-    }
-
-    let content = `${TAB}// ${type}\n`;
-
-    typeEntries.forEach((entry) => {
-      content += `${TAB}${toRegistryKey(entry.name)}: typeof ${entry.identifier};\n`;
+      importsContent += `import type ${entry.identifier} from "${importRoot}/${type}/${entryName}";${EOL}`;
+      entriesContent += `${TAB}${toRegistryKey(entry.name)}: typeof ${entry.identifier};${EOL}`;
 
       if (type === EntryType.Components) {
-        content += `${TAB}${toRegistryKey(toAngleBracketNotation(entry.name))}: typeof ${entry.identifier};\n`;
+        entriesContent += `${TAB}${toRegistryKey(toAngleBracketNotation(entry.name))}: typeof ${entry.identifier};${EOL}`;
       }
-    });
+    }
 
-    entriesContent.push(content);
+    templateRegistryImportsContent.push(importsContent);
+    templateRegistryEntriesContent.push(entriesContent);
   }
 
-  templateRegistryContent += `${entriesContent.join("\n")}}\n`;
+  const templateRegistryPath = options.path
+    ? isAbsolute(options.path)
+      ? options.path
+      : join(cwd, options.path)
+    : join(cwd, entriesDir, "template-registry.ts");
 
-  const templateRegistryPath = join(cwd, entriesDir, "template-registry.ts");
+  const templateRegistryContent = `${templateRegistryImportsContent.join(EOL)}
+export default interface ${pascalCase(packageJson.name)}Registry {
+${templateRegistryEntriesContent.join(EOL)}}
+`;
 
+  await ensureDir(parse(templateRegistryPath).dir);
   await writeFile(templateRegistryPath, templateRegistryContent);
 
   try {
@@ -121,6 +118,6 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
   }
 
   console.log(
-    chalk.green(`Template registry generated at ${templateRegistryPath}`),
+    chalk.green(`Template registry generated at ${templateRegistryPath}.`),
   );
 }
