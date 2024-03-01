@@ -33,12 +33,12 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     );
   }
 
-  if (typeof packageJson.name === "undefined") {
-    throw new Error(`The found "package.json" file is missing a "name" entry.`);
-  }
-
   if (isEmberPackage(packageJson) === false) {
     throw new Error("The current package is not an Ember app or addon.");
+  }
+
+  if (typeof packageJson.name === "undefined") {
+    throw new Error(`The found "package.json" file is missing a "name" entry.`);
   }
 
   const entriesDir = isAddon(packageJson)
