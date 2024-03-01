@@ -2,6 +2,15 @@
 
 
 
+
+## v0.2.1 (2024-03-01)
+
+#### :rocket: Enhancement
+* [#7](https://github.com/bertdeblock/generate-template-registry/pull/7) Support a `--path` option ([@bertdeblock](https://github.com/bertdeblock))
+
+#### Committers: 1
+- Bert De Block ([@bertdeblock](https://github.com/bertdeblock))
+
 ## v0.2.0 (2024-02-29)
 
 #### :rocket: Enhancement

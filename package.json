@@ -1,6 +1,6 @@
 {
   "name": "@bertdeblock/generate-template-registry",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Generate a template registry for Glint.",
   "repository": "https://github.com/bertdeblock/generate-template-registry",
   "license": "MIT",
