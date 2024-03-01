@@ -2,11 +2,17 @@ import fsExtra from "fs-extra";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import recursiveCopy from "recursive-copy";
-import { it } from "vitest";
+import { v4 as uuidv4 } from "uuid";
+import { afterEach, it } from "vitest";
 import { generateTemplateRegistry } from "../src/generate-template-registry.ts";
 
+let cwd: string;
+
+afterEach(() => fsExtra.remove(cwd));
+
 it("generates a template registry for an app", async (ctx) => {
-  const cwd = await copyBlueprint("app");
+  cwd = await copyBlueprint("app");
+
   await generateTemplateRegistry(cwd);
 
   const templateRegistryContent = await readFile(
@@ -18,7 +24,8 @@ it("generates a template registry for an app", async (ctx) => {
 });
 
 it("generates a template registry for a v1 addon", async (ctx) => {
-  const cwd = await copyBlueprint("v1-addon");
+  cwd = await copyBlueprint("v1-addon");
+
   await generateTemplateRegistry(cwd);
 
   const templateRegistryContent = await readFile(
@@ -30,7 +37,8 @@ it("generates a template registry for a v1 addon", async (ctx) => {
 });
 
 it("generates a template registry for a v2 addon", async (ctx) => {
-  const cwd = await copyBlueprint("v2-addon");
+  cwd = await copyBlueprint("v2-addon");
+
   await generateTemplateRegistry(cwd);
 
   const templateRegistryContent = await readFile(
@@ -41,10 +49,24 @@ it("generates a template registry for a v2 addon", async (ctx) => {
   ctx.expect(templateRegistryContent).toMatchSnapshot();
 });
 
-async function copyBlueprint(name) {
-  const cwd = join("test/output", name);
+it("generates a template registry at a custom path", async (ctx) => {
+  cwd = await copyBlueprint("app");
 
-  await fsExtra.remove(cwd);
+  await generateTemplateRegistry(cwd, {
+    path: "app/glint/template-registry.ts",
+  });
+
+  const templateRegistryContent = await readFile(
+    join(cwd, "app/glint/template-registry.ts"),
+    "utf-8",
+  );
+
+  ctx.expect(templateRegistryContent).toMatchSnapshot();
+});
+
+async function copyBlueprint(name: "app" | "v1-addon" | "v2-addon") {
+  const cwd = join("test/output", uuidv4());
+
   await recursiveCopy(join("test", "blueprints", name), cwd);
 
   return cwd;

@@ -29,6 +29,16 @@ or
 bunx @bertdeblock/generate-template-registry@latest
 ```
 
+## Options
+
+### `--path`
+
+Generate a template registry at a custom path.
+
+```shell
+npx @bertdeblock/generate-template-registry@latest --path="app/glint/template-registry.ts"
+```
+
 ## Caveats
 
 - If your app or addon has components, helpers or modifiers with the same name, duplicate template registry entries will be generated, which will need to be fixed manually

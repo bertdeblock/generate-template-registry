@@ -1,11 +1,10 @@
 import chalk from "chalk";
 import { pascalCase } from "change-case";
 import { execa } from "execa";
-import { readJson } from "fs-extra/esm";
+import { ensureDir, readJson } from "fs-extra/esm";
 import { writeFile } from "node:fs/promises";
 import { EOL } from "node:os";
-import { join } from "node:path";
-import { cwd as processCwd } from "node:process";
+import { isAbsolute, join, parse } from "node:path";
 import {
   getEntries,
   isAddon,
@@ -22,7 +21,10 @@ import {
 
 const TAB = "  ";
 
-export async function generateTemplateRegistry(cwd = processCwd()) {
+export async function generateTemplateRegistry(
+  cwd: string,
+  options: { path?: string } = {},
+) {
   let packageJson: EmberPackageJson;
 
   try {
@@ -95,12 +97,18 @@ export async function generateTemplateRegistry(cwd = processCwd()) {
     templateRegistryEntriesContent.push(entriesContent);
   }
 
-  const templateRegistryPath = join(cwd, entriesDir, "template-registry.ts");
+  const templateRegistryPath = options.path
+    ? isAbsolute(options.path)
+      ? options.path
+      : join(cwd, options.path)
+    : join(cwd, entriesDir, "template-registry.ts");
+
   const templateRegistryContent = `${templateRegistryImportsContent.join(EOL)}
 export default interface ${pascalCase(packageJson.name)}Registry {
 ${templateRegistryEntriesContent.join(EOL)}}
 `;
 
+  await ensureDir(parse(templateRegistryPath).dir);
   await writeFile(templateRegistryPath, templateRegistryContent);
 
   try {
