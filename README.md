@@ -39,6 +39,14 @@ Generate a template registry at a custom path.
 npx @bertdeblock/generate-template-registry@latest --path="app/glint/template-registry.ts"
 ```
 
+### `--include-curly-component-invocations`
+
+Generate a template registry including curly component invocations. By default, curly component invocations are not included.
+
+```shell
+npx @bertdeblock/generate-template-registry@latest --include-curly-component-invocations
+```
+
 ## Caveats
 
 - If your app or addon has components, helpers or modifiers with the same name, duplicate template registry entries will be generated, which will need to be fixed manually
