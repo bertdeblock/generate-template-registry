@@ -6,6 +6,12 @@ import { generateTemplateRegistry } from "./generate-template-registry.js";
 export async function cli() {
   const options = await yargs(hideBin(process.argv))
     .options({
+      "include-curly-component-invocations": {
+        default: false,
+        describe:
+          "Generate a template registry including curly component invocations",
+        type: "boolean",
+      },
       path: {
         describe: "Generate a template registry at a custom path",
         type: "string",
@@ -13,5 +19,8 @@ export async function cli() {
     })
     .strict().argv;
 
-  await generateTemplateRegistry(cwd(), { path: options.path });
+  await generateTemplateRegistry(cwd(), {
+    includeCurlyComponentInvocations: options.includeCurlyComponentInvocations,
+    path: options.path,
+  });
 }

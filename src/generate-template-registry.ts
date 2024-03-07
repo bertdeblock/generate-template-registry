@@ -23,7 +23,13 @@ const TAB = "  ";
 
 export async function generateTemplateRegistry(
   cwd: string,
-  options: { path?: string } = {},
+  options: {
+    includeCurlyComponentInvocations?: boolean;
+    path?: string;
+  } = {
+    includeCurlyComponentInvocations: false,
+    path: "",
+  },
 ) {
   let packageJson: EmberPackageJson;
 
@@ -86,10 +92,16 @@ export async function generateTemplateRegistry(
       }
 
       importsContent += `import type ${entry.identifier} from "${importRoot}/${type}/${entryName}";${EOL}`;
-      entriesContent += `${TAB}${toRegistryKey(entry.name)}: typeof ${entry.identifier};${EOL}`;
 
       if (type === EntryType.Components) {
         entriesContent += `${TAB}${toRegistryKey(toAngleBracketNotation(entry.name))}: typeof ${entry.identifier};${EOL}`;
+      }
+
+      if (
+        type !== EntryType.Components ||
+        options.includeCurlyComponentInvocations
+      ) {
+        entriesContent += `${TAB}${toRegistryKey(entry.name)}: typeof ${entry.identifier};${EOL}`;
       }
     }
 

@@ -15,13 +15,9 @@ import type Foo3 from "app/modifiers/foo";
 
 export default interface AppRegistry {
   // components
-  bar: typeof Bar;
   Bar: typeof Bar;
-  "foo-bar": typeof FooBar;
   FooBar: typeof FooBar;
-  foo: typeof Foo;
   Foo: typeof Foo;
-  "foo/bar": typeof FooBar2;
   "Foo::Bar": typeof FooBar2;
 
   // helpers
@@ -48,13 +44,9 @@ import type Foo3 from "v1-addon/modifiers/foo";
 
 export default interface V1AddonRegistry {
   // components
-  bar: typeof Bar;
   Bar: typeof Bar;
-  "foo-bar": typeof FooBar;
   FooBar: typeof FooBar;
-  foo: typeof Foo;
   Foo: typeof Foo;
-  "foo/bar": typeof FooBar2;
   "Foo::Bar": typeof FooBar2;
 
   // helpers
@@ -81,13 +73,9 @@ import type Foo3 from "./modifiers/foo.ts";
 
 export default interface V2AddonRegistry {
   // components
-  bar: typeof Bar;
   Bar: typeof Bar;
-  "foo-bar": typeof FooBar;
   FooBar: typeof FooBar;
-  foo: typeof Foo;
   Foo: typeof Foo;
-  "foo/bar": typeof FooBar2;
   "Foo::Bar": typeof FooBar2;
 
   // helpers
@@ -114,14 +102,43 @@ import type Foo3 from "app/modifiers/foo";
 
 export default interface AppRegistry {
   // components
-  bar: typeof Bar;
   Bar: typeof Bar;
-  "foo-bar": typeof FooBar;
   FooBar: typeof FooBar;
-  foo: typeof Foo;
   Foo: typeof Foo;
-  "foo/bar": typeof FooBar2;
   "Foo::Bar": typeof FooBar2;
+
+  // helpers
+  foo: typeof Foo2;
+
+  // modifiers
+  foo: typeof Foo3;
+}
+"
+`;
+
+exports[`generates a template registry including curly component invocations 1`] = `
+"// components
+import type Bar from "app/components/bar";
+import type FooBar from "app/components/foo-bar";
+import type Foo from "app/components/foo";
+import type FooBar2 from "app/components/foo/bar";
+
+// helpers
+import type Foo2 from "app/helpers/foo";
+
+// modifiers
+import type Foo3 from "app/modifiers/foo";
+
+export default interface AppRegistry {
+  // components
+  Bar: typeof Bar;
+  bar: typeof Bar;
+  FooBar: typeof FooBar;
+  "foo-bar": typeof FooBar;
+  Foo: typeof Foo;
+  foo: typeof Foo;
+  "Foo::Bar": typeof FooBar2;
+  "foo/bar": typeof FooBar2;
 
   // helpers
   foo: typeof Foo2;

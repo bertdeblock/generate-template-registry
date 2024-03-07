@@ -64,6 +64,21 @@ it("generates a template registry at a custom path", async (ctx) => {
   ctx.expect(templateRegistryContent).toMatchSnapshot();
 });
 
+it("generates a template registry including curly component invocations", async (ctx) => {
+  cwd = await copyBlueprint("app");
+
+  await generateTemplateRegistry(cwd, {
+    includeCurlyComponentInvocations: true,
+  });
+
+  const templateRegistryContent = await readFile(
+    join(cwd, "app/template-registry.ts"),
+    "utf-8",
+  );
+
+  ctx.expect(templateRegistryContent).toMatchSnapshot();
+});
+
 async function copyBlueprint(name: "app" | "v1-addon" | "v2-addon") {
   const cwd = join("test/output", uuidv4());
 
