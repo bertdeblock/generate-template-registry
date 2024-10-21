@@ -20,7 +20,7 @@ export async function getEntries(directory: string): Promise<EntriesResult> {
     const path = join(directory, entryType);
 
     if (await pathExists(path)) {
-      const files = await glob("**/*.{gts,ts}", { cwd: path });
+      const files = await glob("**/*.{gjs,gts,js,ts}", { cwd: path });
       const filesSorted = files.sort();
 
       for (let index = 0; index < filesSorted.length; index++) {
