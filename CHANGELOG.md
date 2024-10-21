@@ -3,6 +3,23 @@
 
 
 
+
+## v0.3.0 (2024-10-21)
+
+#### :boom: Breaking Change
+* [#10](https://github.com/bertdeblock/generate-template-registry/pull/10) Include `.gjs` and `.js` files ([@bertdeblock](https://github.com/bertdeblock))
+* [#8](https://github.com/bertdeblock/generate-template-registry/pull/8) Support a `--include-curly-component-invocations` option ([@bertdeblock](https://github.com/bertdeblock))
+
+#### :rocket: Enhancement
+* [#10](https://github.com/bertdeblock/generate-template-registry/pull/10) Include `.gjs` and `.js` files ([@bertdeblock](https://github.com/bertdeblock))
+* [#8](https://github.com/bertdeblock/generate-template-registry/pull/8) Support a `--include-curly-component-invocations` option ([@bertdeblock](https://github.com/bertdeblock))
+
+#### :bug: Bug Fix
+* [#9](https://github.com/bertdeblock/generate-template-registry/pull/9) Ignore `.d.ts` files ([@bertdeblock](https://github.com/bertdeblock))
+
+#### Committers: 1
+- Bert De Block ([@bertdeblock](https://github.com/bertdeblock))
+
 ## v0.2.1 (2024-03-01)
 
 #### :rocket: Enhancement
