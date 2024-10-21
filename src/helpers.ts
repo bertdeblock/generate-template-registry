@@ -25,6 +25,11 @@ export async function getEntries(directory: string): Promise<EntriesResult> {
 
       for (let index = 0; index < filesSorted.length; index++) {
         const file = filesSorted[index];
+
+        if (file.endsWith(".d.ts")) {
+          continue;
+        }
+
         const fileParsed = parse(file);
 
         let name: string;
